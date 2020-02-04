@@ -4,8 +4,10 @@ import common.money.MonetaryAmount;
 import common.money.Percentage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests the JDBC account repository with a test data source to verify data access and relational-to-object mapping
  * behavior works as expected.
  */
+
 public class JdbcAccountRepositoryTests {
 
 	private JdbcAccountRepository repository;

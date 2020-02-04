@@ -10,5 +10,5 @@ public class TestConstants {
 	//
 	// To enable our tests to check console output, change this to true.
 	
-	public static final boolean CHECK_CONSOLE_OUTPUT = false;
+	public static final boolean CHECK_CONSOLE_OUTPUT = true;
 }

@@ -12,6 +12,8 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 import rewards.AccountContribution;
 import rewards.Dining;
 import rewards.RewardConfirmation;
@@ -25,6 +27,7 @@ import common.money.Percentage;
  * Tests the JDBC reward repository with a test data source to verify data access and relational-to-object mapping
  * behavior works as expected.
  */
+
 public class JdbcRewardRepositoryTests {
 
 	private JdbcRewardRepository repository;
