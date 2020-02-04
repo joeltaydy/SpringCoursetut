@@ -1,6 +1,7 @@
 package rewards.internal.reward;
 
 import common.datetime.SimpleDate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import rewards.AccountContribution;
 import rewards.Dining;
 import rewards.RewardConfirmation;
@@ -27,9 +28,8 @@ import java.sql.*;
 public class JdbcRewardRepository implements RewardRepository {
 
 	private DataSource dataSource;
-
-	public JdbcRewardRepository(DataSource dataSource) {
-		this.dataSource = dataSource;
+	private JdbcTemplate jdbcTemplate;
+	public JdbcRewardRepository(DataSource dataSource) {this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 	public RewardConfirmation confirmReward(AccountContribution contribution, Dining dining) {
@@ -37,7 +37,7 @@ public class JdbcRewardRepository implements RewardRepository {
 		String confirmationNumber = nextConfirmationNumber();
 
 		// Update the T_REWARD table with the new Reward
-		try (Connection conn = dataSource.getConnection();
+		/*try (Connection conn = dataSource.getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			
 			ps.setString(1, confirmationNumber);
@@ -50,23 +50,25 @@ public class JdbcRewardRepository implements RewardRepository {
 			ps.execute();
 		} catch (SQLException e) {
 			throw new RuntimeException("SQL exception occured inserting reward record", e);
-		}
-		
+		}*/
+		jdbcTemplate.update(sql,confirmationNumber,contribution.getAmount().asBigDecimal(),
+				new Date(SimpleDate.today().inMilliseconds()), contribution.getAccountNumber(), dining.getMerchantNumber()
+		,new Date(dining.getDate().inMilliseconds()),dining.getAmount().asBigDecimal() );
 		return new RewardConfirmation(confirmationNumber, contribution);
 	}
 
 	private String nextConfirmationNumber() {
 		String sql = "select next value for S_REWARD_CONFIRMATION_NUMBER from DUAL_REWARD_CONFIRMATION_NUMBER";
-		String nextValue;
+		String nextValue = jdbcTemplate.queryForObject(sql,String.class);
 		
-		try (Connection conn = dataSource.getConnection(); 
+		/*try (Connection conn = dataSource.getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql);
 			 ResultSet rs = ps.executeQuery()) {
 			rs.next();
 			nextValue = rs.getString(1);
 		} catch (SQLException e) {
 			throw new RuntimeException("SQL exception getting next confirmation number", e);
-		}
+		}*/
 		
 		return nextValue;
 	}

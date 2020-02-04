@@ -66,7 +66,7 @@ public class JdbcRewardRepositoryTests {
 		//
 		//   SQL: SELECT * FROM T_REWARD WHERE CONFIRMATION_NUMBER = ?
 		
-		Map<String, Object> values = null;
+		Map<String, Object> values = jdbcTemplate.queryForMap("SELECT * FROM T_REWARD WHERE CONFIRMATION_NUMBER = ?", confirmation.getConfirmationNumber());
 		verifyInsertedValues(confirmation, dining, values);
 	}
 
@@ -83,7 +83,7 @@ public class JdbcRewardRepositoryTests {
 	private int getRewardCount() throws SQLException {
 		// TODO-01: Use the JdbcTemplate to query for the number of rows in the T_REWARD table
 		//          SQL: SELECT count(*) FROM T_REWARD
-		return -1;
+		return jdbcTemplate.queryForObject("select count(*) FROM T_REWARD", Integer.class);
 	}
 
 	private DataSource createTestDataSource() {
