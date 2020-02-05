@@ -29,10 +29,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
+
 
 		<!-- TO-DO-01 : Review the dependency for the Spring Boot JPA Starter. What does this do? -->
 		<dependency>
@@ -50,20 +47,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
-	
-	<build>
-		<plugins>
-            <plugin>
-                <!-- Skip these tests.  They won't pass until the student completes the lab. -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/RewardNetworkTests.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-	</build>
+
+
 </project>

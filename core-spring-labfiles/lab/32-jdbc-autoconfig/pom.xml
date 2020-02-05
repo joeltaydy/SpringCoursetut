@@ -22,10 +22,11 @@
 
 
             <!-- Ensure resources are handled correctly -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
+
+             <plugin>
+                 <groupId>org.springframework.boot</groupId>
+                 <artifactId>spring-boot-maven-plugin</artifactId>
+             </plugin>
         </plugins>
     </build>
     
@@ -44,13 +45,13 @@
  
         <!-- Needed for the Spring JdbcTemplate -->
         <dependency>
-            <groupId>org.springframework</groupId>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-jdbc</artifactId>
         </dependency>
 
         <!--  Spring Integration testing support -->
         <dependency>
-            <groupId>org.springframework</groupId>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
         

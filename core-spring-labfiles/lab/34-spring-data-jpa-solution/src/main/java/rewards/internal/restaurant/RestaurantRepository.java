@@ -15,5 +15,5 @@ public interface RestaurantRepository extends Repository<Restaurant,Long> {
 	 * @param merchantNumber the merchant number
 	 * @return the restaurant
 	 */
-	public Restaurant findByNumber(String merchantNumber);
+	public Restaurant findByMerchantNumber(String merchantNumber);
 }

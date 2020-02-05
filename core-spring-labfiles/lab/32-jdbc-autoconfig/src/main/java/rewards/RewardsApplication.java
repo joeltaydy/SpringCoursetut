@@ -1,8 +1,14 @@
 package rewards;
 
+import config.RewardsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 // TODO-01 : Open pom.xml or build.gradle, look for TO-DO-01
 
@@ -20,7 +26,8 @@ import org.springframework.boot.SpringApplication;
 
 // TODO-12 : Follow the instruction in the lab document.
 //           The section titled "Build and Run using Command Line tools".
-
+@SpringBootConfiguration
+@Import(RewardsConfig.class)
 public class RewardsApplication {
 	static final String SQL = "SELECT count(*) FROM T_ACCOUNT";
 	
@@ -49,5 +56,13 @@ public class RewardsApplication {
     //           - Run the application
     //           - In the console output, find "CONDITIONS EVALUATION REPORT"
     //             What is the first positive match? REMEMBER its name.
+	@Bean
+	CommandLineRunner QueryAccountCountRunner(JdbcTemplate jdbcTemplate){
 
+		Long nAccounts =jdbcTemplate.queryForObject(SQL, Long.class);
+		logger.info("Number of accounts: {}" , nAccounts);
+		return args -> System.out.println("Hello, there are "
+				+ nAccounts
+				+ " accounts");
+	}
 }

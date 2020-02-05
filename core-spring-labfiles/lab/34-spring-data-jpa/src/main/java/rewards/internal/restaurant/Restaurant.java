@@ -1,11 +1,12 @@
 package rewards.internal.restaurant;
 
+import com.sun.xml.bind.v2.model.core.ID;
 import common.money.MonetaryAmount;
 import common.money.Percentage;
 import rewards.Dining;
 import rewards.internal.account.Account;
 
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * Restaurants calculate how much benefit may be awarded to an account for
@@ -19,17 +20,22 @@ import javax.persistence.Transient;
 //                            NAME varchar(80) not null,
 //                            BENEFIT_PERCENTAGE decimal(5,2) not null,
 //                            BENEFIT_AVAILABILITY_POLICY varchar(1) not null, unique(MERCHANT_NUMBER));
+@Entity
+@Table(name = "T_RESTAURANT")
 public class Restaurant {
-
+	@Id
+	@Column(name = "ID")
 	private Long entityId;
 
-	private String number;
+	@Column(name = "MERCHANT_NUMBER")
+	private String merchantNumber;
 
 	private String name;
 
 	// This is not a simple mapping as Percentage is not a simple type.
 	// You need to map Percentage.value from a column in T_RESTAURANT.  If unsure,
 	// look at how Beneficiary does it.
+	@AttributeOverride(name="value",column=@Column(name="BENEFIT_PERCENTAGE"))
 	private Percentage benefitPercentage;
 
 
@@ -51,7 +57,7 @@ public class Restaurant {
 	 *            the name of the restaurant
 	 */
 	public Restaurant(String number, String name) {
-		this.number = number;
+		this.merchantNumber = number;
 		this.name = name;
 	}
 
@@ -89,7 +95,7 @@ public class Restaurant {
 	 * Returns the merchant number of this restaurant.
 	 */
 	public String getNumber() {
-		return number;
+		return merchantNumber;
 	}
 
 	/**
@@ -132,7 +138,7 @@ public class Restaurant {
 	}
 
 	public String toString() {
-		return "Number = '" + number + "', name = '" + name
+		return "Number = '" + merchantNumber + "', name = '" + name
 				+ "', benefitPercentage = " + benefitPercentage
 				+ ", benefitAvailabilityPolicy = " + benefitAvailabilityPolicy;
 	}

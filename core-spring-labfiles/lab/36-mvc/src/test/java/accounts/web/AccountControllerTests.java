@@ -30,7 +30,6 @@ public class AccountControllerTests {
 	// Strictly speaking we should have tested the Controller before we ran the
 	// application.
 	@Test
-	@Disabled
 	public void testHandleListRequest() {
 		List<Account> accounts = controller.accountList();
 
@@ -46,18 +45,27 @@ public class AccountControllerTests {
 
 	// TODO-10: Remove the @Disabled annotation, run the test, it should pass.
 	@Test
-	@Disabled
 	public void testHandleDetailsRequest() {
 		// TODO-08a: Implement test code which calls the accountDetails() method on the controller.
 		//  - The accountDetails() method does not exist yet.  We will implement it in the next step.
 		//  - It will take one parameter - a long entityId
 		//  - It will return an Account.
 		//  - This class won't compile until you modify the AccountController in TO DO 09
+		// Non-empty list containing the one and only test account
+		Account accounts = controller.accountDetails(0);
 
+		// Non-empty list containing the one and only test account
+		assertNotNull(accounts);
+
+		// Validate that account
+		assertEquals(expectedAccountId, (long) accounts.getEntityId());
+		assertEquals(expectedAccountNumber, accounts.getNumber());
 		// TODO-08b: Define the following assertions:
 		// The account is not null
 		// The account id matches expectedAccountId (see above)
 		// The account number matches expectedAccountNumber  (see above)
+
+
 	}
 
 }

@@ -25,7 +25,7 @@ public class SystemTestConfig {
 	 * Creates an in-memory "rewards" database populated 
 	 * with test data for fast testing
 	 */
-	@Bean
+	//@Bean
 	public DataSource dataSource() {
 		logger.debug("Creating the datasource bean explicitly");
 
