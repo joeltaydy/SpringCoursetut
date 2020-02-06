@@ -36,13 +36,12 @@ public class AccountControllerTests {
 
 		// TODO-11: Fix this test - this constructor has a new parameter
 		// Run the test, it should pass
-		controller = new AccountController(new StubAccountManager());
-	}
+		controller = new AccountController(new StubAccountManager(), registry);	}
 
 	@Test
 	// TODO-20: Remove @Disabled annotation
 	// - Run all the tests in this class. All should pass.
-	@Disabled
+
 	public void testHandleDetailsRequest() {
 		Account account = controller.accountDetails(0);
 		assertNotNull(account);

@@ -1,0 +1,188 @@
+Installation Setup (1.5.1)
+===============================================================
+- Lab Files zip (core-spring-labfiles.zip)
+- JDK  : 8 / 11
+- IDE  : STS / IntelliJ
+- Build: Maven / Gradle
+
+
+
+Workaround for AOP limitation of method calls within class
+---------------------------------------------------------------------------
+@Component
+class MyBean 
+{
+	@Autowired
+	MyBean self;
+
+	void a() { ...; self.b(); }
+
+	void b() { ...}
+}
+----------------------------------------
+@Aspect
+class MyAspect 
+{
+	@Before("execution(* b(*))")
+	void myAdvice() { ... }
+}
+----------------------------------------
+@Autowired 
+MyBean bean;
+bean.b();  // myAdvice triggered
+bean.a();  // myAdvice not triggered
+
+
+
+
+JVM Shutdown Hook
+---------------------------------------------------------------------------
+  kill <pid>       => graceful shutdown 
+  kill -9 <pid>    => force shutdown
+  kill -3 <pid>    => thread dump, no kill
+
+  taskkill /pid    => graceful shutdown 
+  <ctrl>-C         => force shutdown
+  <ctrl><break>    => thread dump, no kill
+
+  jstack <pid>     => thread dump, no kill
+---------------------------------------------------------------------------
+
+
+
+
+Layer				ClassName				Annotation
+---------------------------------------------------------------------------
+Web					AccountController		@RestController,@Controller
+Service				AccountService			@Service    (@Transactional)
+Repository			AccountRepository		@Repository (uses JdbcTemplate)
+Infrastructure		DataSource				-
+Domain Object		Account					POJO (SpringData:@Id, JPA:@Entity)
+
+Config Class		AppConfig,InfraConfig	@Configuration
+Main Class			???Application			@SpringBootApplication
+---------------------------------------------------------------------------
+
+
+
+
+
+
+Operation	HTTP	Request: URL	Body	Header		 |Response: Status		Body	Header
+---------------------------------------------------------|--------------------------------------
+Create		Post	/account		{JSON}	Content-Type |	201:CREATED					Location
+Read		Get		/account/{id}			Accept		 |	200:OK				{JSON}
+Update		Put		/account/{id}	{JSON}	Content-Type |	204:NO_CONTENT
+Delete		Delete	/account/{id}						 |	204:NO_CONTENT
+---------------------------------------------------------|--------------------------------------
+
+
+
+
+
+
+Lab 32-jdbc-autoconfig
+===============================================================
+lab> ./gradlew :32-jdbc-autoconfig:dependencies --configuration compile -Dincludes=org.springframework
+
+  Task '.springframework' not found in root project 'parentProject'.
+
+lab> ./mvnw -pl *-common -pl *jdbc-autoconfig dependency:tree -Dincludes=org.springframework
+
+  [ERROR] Unknown lifecycle phase ".springframework". 
+
+=> add quotes 'org.springframework'
+
+lab> mvnw clean package -pl *common -pl *jdbc-autoconfig -Dmaven.test.skip=true
+
+  [ERROR] Unknown lifecycle phase ".test.skip=true". Y
+
+=> add quotes 'maven.test.skip'
+
+
+TODO-11: BeanCurrentlyInCreationException
+
+=> when @Autowired and @Bean are present in same class
+
+
+
+Lab 42-actuator
+===============================================================
+Solution missing in AccountController:
+
+	public @ResponseBody List<Account> accountSummary() {
+		logger.debug("Logging message within accountSummary()"); // add this line
+		return accountManager.getAllAccounts();
+	}
+
+lab> ./mvnw -pl 42-actuator clean package
+
+	[ERROR] Failed to execute goal on project 42-actuator-solution: Could not resolve dependencies for project io.pivotal.education.core-spring:42-actuator-solution:jar:5.0.c.RELEASE: The following artifacts could not be resolved: io.pivotal.education.core-spring:00-rewards-common:jar:5.0.c.RELEASE
+
+=> ./mvnw -pl *rewards -pl *db -pl 42-actuator clean package
+
+
+
+Spring Boot Actuator Demo
+===============================================================
+mvn -pl *-common -pl *-db -pl 42-actuator-solution package
+
+spring.jmx.enabled=true
+
+management.endpoints.web.exposure.include=*
+
+management.endpoint.health.show-details=always
+
+management.endpoint.shutdown.enabled=true
+
+info.demo.name=Hello
+info.demo.version=2.0
+
+http://localhost:8080/actuator/info
+
+http://localhost:8080/actuator/metrics/account.fetch
+
+http://localhost:8080/accounts/0   (several times)
+
+http://localhost:8080/accounts   (fromAspect)
+
+http://localhost:8080/actuator/metrics/account.fetch?tag=type:fromAspect
+
+
+
+Spring Boot Actuator-Prometheus Demo
+===============================================================
+install prometheus
+
+add to prometheus.yml:
+  - job_name: 'spring-actuator'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['localhost:8080']
+
+add to pom.xml:
+	<dependency>
+		<groupId>io.micrometer</groupId>
+		<artifactId>micrometer-registry-prometheus</artifactId>
+	</dependency>
+
+add to ActuatorSecurityConfiguration.java:
+	.requestMatchers(EndpointRequest.to("prometheus")).permitAll()
+
+start ActuatorApplication
+
+start: prometheus.exe  (access http://localhost:9090)
+
+Targets: http://localhost:8080/actuator/prometheus
+
+Search: process_cpu_usage > Execute > Add Graph
+
+Search: jdbc_connections_active > jdbc_connections_min
+
+http://localhost:8080/actuator/metrics/account.fetch
+http://localhost:8080/accounts  (refresh several times)
+Search: account_fetch_total
+
+http://localhost:8080/actuator/metrics/http.server.requests?tag=method:GET&tag=status:401
+

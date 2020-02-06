@@ -2,6 +2,9 @@ package accounts.web;
 
 import accounts.AccountManager;
 import common.money.Percentage;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rewards.internal.account.Account;
 import rewards.internal.account.Beneficiary;
+import sun.net.www.MeteredStream;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -34,7 +38,7 @@ public class AccountController {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private AccountManager accountManager;
-
+	private Counter counter ;
 	// TODO-09: Add a Counter and initialize it via the constructor
 	// - You will need to inject a MeterRegistry
 	// - Call the counter "account.fetch" with a tag of "type"/"fromCode" key/value pair
@@ -44,11 +48,12 @@ public class AccountController {
 	/**
 	 * Creates a new AccountController with a given account manager.
 	 */
-	@Autowired
-	public AccountController(AccountManager accountManager) {
-		this.accountManager = accountManager;
-	}
 
+	@Autowired
+	public AccountController(AccountManager accountManager, MeterRegistry registry) {
+		this.accountManager = accountManager;
+		this.counter = registry.counter("account.fetch", "type", "fromCode");
+	}
 	/**
 	 * Provide a list of all accounts.
      *
@@ -63,7 +68,9 @@ public class AccountController {
 	 * TODO-25 (Extra credit): Use annotation and AOP for counter (Read lab document)
 	 */
 	@GetMapping(value = "/accounts")
+	@Timed(value="account.timer", extraTags = {"source", "accountSummary"})
 	public @ResponseBody List<Account> accountSummary() {
+		logger.debug("Logging message within accountSummary()");
 		return accountManager.getAllAccounts();
 	}
 
@@ -77,7 +84,9 @@ public class AccountController {
      * -Set a extra tag with "source"/"accountDetails" key/value pair
 	 */
 	@GetMapping(value = "/accounts/{id}")
+	@Timed(value="account.timer", extraTags = {"source", "accountDetails"})
 	public @ResponseBody Account accountDetails(@PathVariable int id) {
+		counter.increment();
 		return retrieveAccount(id);
 	}
 

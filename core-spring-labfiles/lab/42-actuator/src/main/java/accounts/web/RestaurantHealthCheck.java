@@ -1,5 +1,10 @@
 package accounts.web;
 
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+import rewards.internal.restaurant.RestaurantRepository;
+
 /**
  * TODO-17a: Make this class implement HealthIndicator
  *  - Make this class a component
@@ -10,6 +15,19 @@ package accounts.web;
  *
  * TODO-24 (Extra credit): Experiment with HealthIndicator (Read lab document)
  */
-public class RestaurantHealthCheck {
+@Component
+public class RestaurantHealthCheck implements HealthIndicator {
+    private RestaurantRepository restaurantRepository;
+    public RestaurantHealthCheck(RestaurantRepository restaurantRepository){
+        this.restaurantRepository=restaurantRepository;
+    }
 
+    @Override
+    public Health health() {
+        if (restaurantRepository.getRestaurantCount()>=1){
+            return Health.up().build();
+        }else{
+            return Health.down().build();
+        }
+    }
 }

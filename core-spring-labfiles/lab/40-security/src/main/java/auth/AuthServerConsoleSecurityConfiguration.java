@@ -2,12 +2,13 @@ package auth;
 
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 // TODO-04: Enable this configuration by removing // comment characters
-//@EnableWebSecurity
+@EnableWebSecurity
 public class AuthServerConsoleSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	public static final String ADMIN_USER = "admin";
@@ -28,10 +29,10 @@ public class AuthServerConsoleSecurityConfiguration extends WebSecurityConfigure
 				= PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
 		// TODO-05: Add two users - ADMIN_USER and SUPERUSER_USER with encoded passwords
-		auth.inMemoryAuthentication()
+		auth.inMemoryAuthentication().withUser("ADMIN_USER").password(passwordEncoder.encode("ADMIN_PASSWORD")).roles("ADMIN_ROLE")
 		// Add ADMIN_USER/ADMIN_PASSWORD with ADMIN_ROLE
+		.and().withUser("SUPERUSER_USER").password(passwordEncoder.encode("SUPERUSER_PASSWORD")).roles("ADMIN_ROLE","SUPERUSER_ROLE");
 
-		.and()
 		// Add SUPERUSER_USER/SUPERUSER_PASSWORD with ADMIN_ROLE and SUPERUSER_ROLE
 
 		;
@@ -54,8 +55,9 @@ public class AuthServerConsoleSecurityConfiguration extends WebSecurityConfigure
 			     // Allow open-access to resources (images, CSS, JavaScript)
 				.mvcMatchers("/resources/**").permitAll() //
 				// TODO-06a: Allow "/superuser*" pages accessible only by SUPERUSER_ROLE
-
+				.mvcMatchers("/superuser").hasRole("SUPERUSER_ROLE")
 				// TODO-06b: Allow all remaining pages accessible by ADMIN_ROLE
+				.anyRequest().hasRole("ADMIN_ROLE")
 
 			.and() //
 				// Enable logout and redirect to /done afterwards

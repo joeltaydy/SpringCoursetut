@@ -26,18 +26,17 @@ public class RestaurantHealthCheckTest {
 		// TODO-17b: Create an instance of RestaurantHealthCheck class
 		// - Remove the two @Disabled annotations below
 		// - Run the test, make sure it passes.
-		restaurantHealthCheck = null;
+		restaurantHealthCheck = new RestaurantHealthCheck(restaurantRepository);
 	}
 
 	@Test
-	@Disabled
 	public void testHealthReturnsUpIfThereAreRestaurants() {
 		// Mock the Repository so getRestaurantCount returns 1
 		doReturn(1L).when(restaurantRepository).getRestaurantCount();
 
 		// TODO-16a: Invoke the health() method on RestaurantHealthCheck
 		// (You will write health() method in the next step)
-		Health result = null;
+		Health result = restaurantHealthCheck.health();;
 
 		// Health check should return UP
 		verify(restaurantRepository).getRestaurantCount();
